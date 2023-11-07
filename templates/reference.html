@@ -1,0 +1,21 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %}
+Справочник
+{% endblock title %}
+
+{% block content %}
+    <div class="user-title">
+        <h2Справочник: {{ reference }}></h2Справочник:>
+    </div>
+    <table cellpadding="5" align="center" style="front-size: 14pt">
+        <tr>
+            <th>Название</th>
+            <th>Описание</th
+        </tr>
+        <tr>
+            <td>{{ reference }}</td>
+            <td>{{ reference.discription }}</td>
+        </tr>
+    </table>
+{% endblock content %}
