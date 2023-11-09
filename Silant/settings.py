@@ -140,7 +140,7 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Указываем на пользовательский адаптер - настройка с помощью ACCOUNT_ALLOW_SIGNUPS
-ACCOUNT_ADAPTER = 'silant.adapter.CustomAccountAdapter'
+ACCOUNT_ADAPTER = 'mySilant.adapter.CustomAccountAdapter'
 
 # Пользовательская переменная - разрешает/запрещает регистрацию через ACCOUNT_ADAPTER
 ACCOUNT_ALLOW_SIGNUPS = False

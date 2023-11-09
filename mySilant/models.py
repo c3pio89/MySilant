@@ -144,7 +144,7 @@ class RecoveryMethod(models.Model):
 class Machine(models.Model):
     number_machine = models.CharField(unique=True, max_length=255, verbose_name='Заводский номер машины')
     model_equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, verbose_name='Модель техники', related_name='machines_equipment')
-    model_engine = models.ForeignKey(Equipment, on_delete=models.CASCADE, verbose_name='Модель двигателя', related_name='machines_engine')
+    model_engine = models.ForeignKey(Engine, on_delete=models.CASCADE, verbose_name='Модель двигателя', related_name='machines_engine')
     number_engine = models.CharField(max_length=255, verbose_name='Заводской номер двигателя')
     model_transmission = models.ForeignKey(Transmission, on_delete=models.CASCADE, verbose_name='Модель трансмиссии')
     number_transmission = models.CharField(max_length=255, verbose_name='Заводской номер трансмиссии')
