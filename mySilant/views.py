@@ -1,4 +1,3 @@
-from django.shortcuts import render, get_object_or_404
 from django.views.generic import (
     ListView, DetailView, CreateView, UpdateView, DeleteView
 )
@@ -35,18 +34,18 @@ class MachineList(ListView):
                 users_clients.append(client.user_link)
             for company in companies:
                 users_companies.append(company.user_link)
-            if user.is_superuser == 1 or user.is_staff == 1:    # если админ или менеджер - доступны все машины
+            if user.is_superuser == 1 or user.is_staff == 1:  # если админ или менеджер - доступны все машины
                 queryset = super().get_queryset()
-            elif user in users_clients: # если клиент - доступны соответствующие машины
+            elif user in users_clients:  # если клиент - доступны соответствующие машины
                 queryset = Machine.objects.filter(client__user_link=user).order_by('shipment_date')
-            elif user in users_companies:   # если сервисная компания - доступны соответствующие машины
+            elif user in users_companies:  # если сервисная компания - доступны соответствующие машины
                 queryset = Machine.objects.filter(service_company__user_link=user).order_by('shipment_date')
             self.filterset = MachineFilter(self.request.GET, queryset)  # сохраняем фильтрацию в объекте класса
         else:
             # Если пользователь не зарегистрирован - ограниченный фильтр по всем машинам
             if not self.request.GET.__contains__('number_machine'):
                 queryset = super().get_queryset()
-                queryset = Machine.objects.none()   # если в строке поиска пусто, то пустой queryset
+                queryset = Machine.objects.none()  # если в строке поиска пусто, то пустой queryset
             else:
                 if self.request.GET.get('number_machine') != '':
                     queryset = super().get_queryset()  # если что-то есть в строке поиска, получаем обычный запрос
@@ -64,7 +63,7 @@ class MachineList(ListView):
 
 # Подробности по каждой машине
 class MachineDetail(PermissionRequiredMixin, DetailView):
-    permission_required = ('silant.view_machine')  # должны быть права на просмотр
+    permission_required = 'mySilant.view_machine'  # должны быть права на просмотр
     model = Machine  # выводим машины
     template_name = 'machine.html'  # шаблон для вывода
     context_object_name = 'machine'  # имя списка, по которому будет обращение из html-шаблона
@@ -94,33 +93,33 @@ class MachineDetail(PermissionRequiredMixin, DetailView):
 
 # Создание записи о новой машине с проверкой прав
 class MachineCreate(PermissionRequiredMixin, CreateView):
-    permission_required = ('silant.add_machine')    # должны быть права на добавление записи
+    permission_required = 'mySilant.add_machine'  # должны быть права на добавление записи
     form_class = MachineForm
     model = Machine
-    template_name = 'machine_edit.html' # шаблон для вывода
+    template_name = 'machine_edit.html'  # шаблон для вывода
     success_url = reverse_lazy('machine_list')  # после создания записи возвращаемя на страницу с перечнем
 
 
 # Редактирование записи о машине с проверкой прав
 class MachineEdit(PermissionRequiredMixin, UpdateView):
-    permission_required = ('silant.change_machine') # должны быть права на редактипрование записи
+    permission_required = 'mySilant.change_machine'  # должны быть права на редактипрование записи
     form_class = MachineForm
     model = Machine
-    template_name = 'machine_edit.html' # шаблон для вывода
+    template_name = 'machine_edit.html'  # шаблон для вывода
     success_url = reverse_lazy('machine_list')  # после редактирования записи возвращаемся на страницу с перечнем
 
 
 # Удаление записи о машине с проверкой прав
 class MachineDelete(PermissionRequiredMixin, DeleteView):
-    permission_required = ('silant.delete_machine') # должны быть права на удаление записи
+    permission_required = 'mySilant.delete_machine'  # должны быть права на удаление записи
     model = Machine
-    template_name = 'machine_delete.html'   # шаблон для вывода
+    template_name = 'machine_delete.html'  # шаблон для вывода
     success_url = reverse_lazy('machine_list')  # после удаления записи возвращаемся на страницу с перечнем
 
 
 # Вывод списка ТО с проверкой прав
 class MaintenanceList(PermissionRequiredMixin, ListView):
-    permission_required = ('silant.view_maintenance')   # должны быть права на просмотр
+    permission_required = 'mySilant.view_maintenance'  # должны быть права на просмотр
     model = Maintenance  # выводим информацию о ТО
     ordering = 'maintenance_date'  # сортировка по дате создания
     template_name = 'maintenances.html'  # шаблон для вывода
@@ -159,7 +158,7 @@ class MaintenanceList(PermissionRequiredMixin, ListView):
 
 # Подробности по каждому ТО с проверкой прав
 class MaintenanceDetail(PermissionRequiredMixin, DetailView):
-    permission_required = ('silant.view_maintenance')  # должны быть права на просмотр
+    permission_required = 'mySilant.view_maintenance'  # должны быть права на просмотр
     model = Maintenance  # выводим ТО
     template_name = 'maintenance.html'  # шаблон для вывода
     context_object_name = 'maintenance'  # имя списка, по которому будет обращение из html-шаблона
@@ -190,10 +189,10 @@ class MaintenanceDetail(PermissionRequiredMixin, DetailView):
 
 # Создание записи о новом ТО с проверкой прав
 class MaintenanceCreate(PermissionRequiredMixin, CreateView):
-    permission_required = ('silant.add_maintenance')    # должны быть права на добавление записи
+    permission_required = 'mySilant.add_maintenance'  # должны быть права на добавление записи
     form_class = MaintenanceForm
     model = Maintenance
-    template_name = 'maintenance_edit.html' # шаблон для вывода
+    template_name = 'maintenance_edit.html'  # шаблон для вывода
     success_url = reverse_lazy('maintenance_list')  # после создания записи возвращаемся на страницу с перечнем
 
     def get_form_kwargs(self):
@@ -207,10 +206,10 @@ class MaintenanceCreate(PermissionRequiredMixin, CreateView):
 
 # Редактирование записи о ТО с проверкой прав
 class MaintenanceEdit(PermissionRequiredMixin, UpdateView):
-    permission_required = ('silant.change_maintenance') # должны быть права на редактирование записи
+    permission_required = 'mySilant.change_maintenance'  # должны быть права на редактирование записи
     form_class = MaintenanceForm
     model = Maintenance
-    template_name = 'maintenance_edit.html' # шаблон для вывода
+    template_name = 'maintenance_edit.html'  # шаблон для вывода
     success_url = reverse_lazy('maintenance_list')  # после редактирования записи возвращаемся на страницу с перечнем
 
     # Переопределяем функцию получения данных о ТО
@@ -247,9 +246,9 @@ class MaintenanceEdit(PermissionRequiredMixin, UpdateView):
 
 # Удаление записи о ТО с проверкой прав
 class MaintenanceDelete(PermissionRequiredMixin, DeleteView):
-    permission_required = ('silant.delete_maintenance') # должны быть права на удаление записи
+    permission_required = 'mySilant.delete_maintenance'  # должны быть права на удаление записи
     model = Maintenance
-    template_name = 'maintenance_delete.html'   # шаблон для вывода
+    template_name = 'maintenance_delete.html'  # шаблон для вывода
     success_url = reverse_lazy('maintenance_list')  # после удаления записи возвращаемся на страницу с перечнем
 
     # Переопределяем функцию получения данных о ТО
@@ -278,7 +277,7 @@ class MaintenanceDelete(PermissionRequiredMixin, DeleteView):
 
 # Вывод списка рекламаций с проверкой прав
 class ClaimList(PermissionRequiredMixin, ListView):
-    permission_required = ('silant.view_claim')  # должны быть права на просмотр
+    permission_required = 'mySilant.view_claim'  # должны быть права на просмотр
     model = Claim  # выводим информацию о рекламациях
     ordering = 'refusal_date'  # сортировка по дате отказа
     template_name = 'claims.html'  # шаблон для вывода
@@ -317,7 +316,7 @@ class ClaimList(PermissionRequiredMixin, ListView):
 
 # Подробности по каждой рекламации
 class ClaimDetail(PermissionRequiredMixin, DetailView):
-    permission_required = ('silant.view_claim')  # должны быть права на просмотр
+    permission_required = 'mySilant.view_claim'  # должны быть права на просмотр
     model = Claim  # выводим рекламации
     template_name = 'claim.html'  # шаблон для вывода
     context_object_name = 'claim'  # имя списка, по которому будет обращение из html-шаблона
@@ -348,10 +347,10 @@ class ClaimDetail(PermissionRequiredMixin, DetailView):
 
 # Создание записи о новой рекламации с проверкой прав
 class ClaimCreate(PermissionRequiredMixin, CreateView):
-    permission_required = ('silant.add_claim')  # должны быть права на добавление записи
+    permission_required = 'mySilant.add_claim'  # должны быть права на добавление записи
     form_class = ClaimForm
     model = Claim
-    template_name = 'claim_edit.html' # шаблон для вывода
+    template_name = 'claim_edit.html'  # шаблон для вывода
     success_url = reverse_lazy('claim_list')  # после создания записи возвращаемся на страницу с перечнем
 
     def get_form_kwargs(self):
@@ -365,10 +364,10 @@ class ClaimCreate(PermissionRequiredMixin, CreateView):
 
 # Редактирование записи о рекламации с проверкой прав
 class ClaimEdit(PermissionRequiredMixin, UpdateView):
-    permission_required = ('silant.change_claim')   # должны быть права на редактирование записи
+    permission_required = 'mySilant.change_claim'  # должны быть права на редактирование записи
     form_class = ClaimForm
     model = Claim
-    template_name = 'claim_edit.html' # шаблон для вывода
+    template_name = 'claim_edit.html'  # шаблон для вывода
     success_url = reverse_lazy('claim_list')  # после редактирования записи возвращаемся на страницу с перечнем
 
     # Переопределяем функцию получения данных о рекламации
@@ -405,9 +404,9 @@ class ClaimEdit(PermissionRequiredMixin, UpdateView):
 
 # Удаление записи о рекламации с проверкой прав
 class ClaimDelete(PermissionRequiredMixin, DeleteView):
-    permission_required = ('silant.delete_claim')   # должны быть права на удаление записи
+    permission_required = 'mySilant.delete_claim'  # должны быть права на удаление записи
     model = Claim
-    template_name = 'claim_delete.html'   # шаблон для вывода
+    template_name = 'claim_delete.html'  # шаблон для вывода
     success_url = reverse_lazy('claim_list')  # после удаления записи возвращаемся на страницу с перечнем
 
     # Переопределяем функцию получения данных о рекламации
@@ -436,7 +435,7 @@ class ClaimDelete(PermissionRequiredMixin, DeleteView):
 
 # Справочное описание модели техники
 class EquipmentDetail(PermissionRequiredMixin, DetailView):
-    permission_required = ('silant.view_equipment')  # должны быть права на просмотр
+    permission_required = 'mySilant.view_equipment'  # должны быть права на просмотр
     model = Equipment  # выводим модель техники
     template_name = 'reference.html'  # шаблон для вывода
     context_object_name = 'reference'  # имя списка, по которому будет обращение из html-шаблона
@@ -444,7 +443,7 @@ class EquipmentDetail(PermissionRequiredMixin, DetailView):
 
 # Справочное описание модели двигателя
 class EngineDetail(PermissionRequiredMixin, DetailView):
-    permission_required = ('silant.view_engine')  # должны быть права на просмотр
+    permission_required = 'mySilant.view_engine'  # должны быть права на просмотр
     model = Engine  # выводим модель техники
     template_name = 'reference.html'  # шаблон для вывода
     context_object_name = 'reference'  # имя списка, по которому будет обращение из html-шаблона
@@ -452,7 +451,7 @@ class EngineDetail(PermissionRequiredMixin, DetailView):
 
 # Справочное описание модели трансмиссии
 class TransmissionDetail(PermissionRequiredMixin, DetailView):
-    permission_required = ('silant.view_transmission')  # должны быть права на просмотр
+    permission_required = 'mySilant.view_transmission'  # должны быть права на просмотр
     model = Transmission  # выводим модель трансмиссии
     template_name = 'reference.html'  # шаблон для вывода
     context_object_name = 'reference'  # имя списка, по которому будет обращение из html-шаблона
@@ -460,7 +459,7 @@ class TransmissionDetail(PermissionRequiredMixin, DetailView):
 
 # Справочное описание модели ведущего моста
 class DrivingAxleDetail(PermissionRequiredMixin, DetailView):
-    permission_required = ('silant.view_drivingaxle')  # должны быть права на просмотр
+    permission_required = 'mySilant.view_drivingaxle'  # должны быть права на просмотр
     model = DrivingAxle  # выводим ведущего моста
     template_name = 'reference.html'  # шаблон для вывода
     context_object_name = 'reference'  # имя списка, по которому будет обращение из html-шаблона
@@ -468,7 +467,7 @@ class DrivingAxleDetail(PermissionRequiredMixin, DetailView):
 
 # Справочное описание модели управляемого моста
 class SteeringAxleDetail(PermissionRequiredMixin, DetailView):
-    permission_required = ('silant.view_steeringaxle')  # должны быть права на просмотр
+    permission_required = 'mySilant.view_steeringaxle'  # должны быть права на просмотр
     model = SteeringAxle  # выводим модель управляемого моста
     template_name = 'reference.html'  # шаблон для вывода
     context_object_name = 'reference'  # имя списка, по которому будет обращение из html-шаблона
@@ -476,7 +475,7 @@ class SteeringAxleDetail(PermissionRequiredMixin, DetailView):
 
 # Справочное описание клиента
 class ClientDetail(PermissionRequiredMixin, DetailView):
-    permission_required = ('silant.view_steeringaxle')  # должны быть права на просмотр
+    permission_required = 'mySilant.view_steeringaxle'  # должны быть права на просмотр
     model = Client  # выводим клиента
     template_name = 'reference.html'  # шаблон для вывода
     context_object_name = 'reference'  # имя списка, по которому будет обращение из html-шаблона
@@ -484,7 +483,7 @@ class ClientDetail(PermissionRequiredMixin, DetailView):
 
 # Справочное описание сервисной компании
 class ServiceCompanyDetail(PermissionRequiredMixin, DetailView):
-    permission_required = ('silant.view_servicecompany')  # должны быть права на просмотр
+    permission_required = 'mySilant.view_servicecompany'  # должны быть права на просмотр
     model = ServiceCompany  # выводим сервисную компанию
     template_name = 'reference.html'  # шаблон для вывода
     context_object_name = 'reference'  # имя списка, по которому будет обращение из html-шаблона
@@ -492,7 +491,7 @@ class ServiceCompanyDetail(PermissionRequiredMixin, DetailView):
 
 # Справочное описание организации, проводившей ТО
 class MaintenanceCompanyDetail(PermissionRequiredMixin, DetailView):
-    permission_required = ('silant.view_maintenancecompany')  # должны быть права на просмотр
+    permission_required = 'mySilant.view_maintenancecompany'  # должны быть права на просмотр
     model = MaintenanceCompany  # выводим организацию, проводившую ТО
     template_name = 'reference.html'  # шаблон для вывода
     context_object_name = 'reference'  # имя списка, по которому будет обращение из html-шаблона
@@ -500,7 +499,7 @@ class MaintenanceCompanyDetail(PermissionRequiredMixin, DetailView):
 
 # Справочное описание типа ТО
 class TypeMaintenanceDetail(PermissionRequiredMixin, DetailView):
-    permission_required = ('silant.view_typemaintenance')  # должны быть права на просмотр
+    permission_required = 'mySilant.view_typemaintenance'  # должны быть права на просмотр
     model = TypeMaintenance  # выводим тип ТО
     template_name = 'reference.html'  # шаблон для вывода
     context_object_name = 'reference'  # имя списка, по которому будет обращение из html-шаблона
@@ -508,7 +507,7 @@ class TypeMaintenanceDetail(PermissionRequiredMixin, DetailView):
 
 # Справочное описание узла отказа
 class RefusalNodeDetail(PermissionRequiredMixin, DetailView):
-    permission_required = ('silant.view_refusalnode')  # должны быть права на просмотр
+    permission_required = 'mySilant.view_refusalnode'  # должны быть права на просмотр
     model = RefusalNode  # выводим узел отказа
     template_name = 'reference.html'  # шаблон для вывода
     context_object_name = 'reference'  # имя списка, по которому будет обращение из html-шаблона
@@ -516,9 +515,7 @@ class RefusalNodeDetail(PermissionRequiredMixin, DetailView):
 
 # Справочное описание способа восстановления
 class RecoveryMethodDetail(PermissionRequiredMixin, DetailView):
-    permission_required = ('silant.view_recoverymethod')  # должны быть права на просмотр
+    permission_required = 'mySilant.view_recoverymethod'  # должны быть права на просмотр
     model = RecoveryMethod  # выводим способ восстановления
     template_name = 'reference.html'  # шаблон для вывода
     context_object_name = 'reference'  # имя списка, по которому будет обращение из html-шаблона
-
-

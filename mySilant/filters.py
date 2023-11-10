@@ -1,11 +1,7 @@
 import django_filters
-from django_filters import FilterSet, ModelChoiceFilter, CharFilter
-# from django.forms import DateTimeInput
+from django_filters import FilterSet, ModelChoiceFilter
 
-from .models import (
-    Machine, Equipment, Engine, Transmission, DrivingAxle, SteeringAxle, TypeMaintenance, Maintenance, ServiceCompany,
-    Claim, RefusalNode, RecoveryMethod
-)
+from .models import *
 
 
 # Для фильтрации по таблице с машинами
@@ -79,7 +75,9 @@ class MaintenanceFilter(FilterSet):
         label='Сервисная компания',
     )
 
+
 # Для фильтрации по таблице с рекламациями
+
 class ClaimFilter(FilterSet):
     # Для организации фильтрации по узлу отказа
     refusal_node = ModelChoiceFilter(
