@@ -1,8 +1,15 @@
-from django.urls import path
-
+from django.urls import path,include
+from rest_framework.routers import DefaultRouter
 from .views import *
 
+router = DefaultRouter()
+router.register(r'machines', MachineViewSet)
+router.register(r'maintenance', MaintenanceViewSet)
+router.register(r'claims', ClaimViewSet)
+
+
 urlpatterns = [
+    path('api/', include(router.urls)),
     path('machines/', MachineList.as_view(), name='machine_list'),
     path('machines/<int:pk>', MachineDetail.as_view(), name='machine_detail'),
     path('machines/create/', MachineCreate.as_view(), name='maсhine_create'),

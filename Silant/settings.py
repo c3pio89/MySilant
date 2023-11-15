@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'mySilant',
+    'drf_yasg',
+    'rest_framework',
     'django_filters',
     'allauth',
     'allauth.account',
@@ -144,3 +146,15 @@ ACCOUNT_ADAPTER = 'mySilant.adapter.CustomAccountAdapter'
 
 # Пользовательская переменная - разрешает/запрещает регистрацию через ACCOUNT_ADAPTER
 ACCOUNT_ALLOW_SIGNUPS = False
+
+# Django REST Framework settings
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}

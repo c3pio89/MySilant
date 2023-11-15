@@ -1,3 +1,4 @@
+from rest_framework import viewsets
 from django.views.generic import (
     ListView, DetailView, CreateView, UpdateView, DeleteView
 )
@@ -10,6 +11,7 @@ from .models import (
 )
 from .filters import MachineFilter, MaintenanceFilter, ClaimFilter, MachinePreviewFilter
 from .forms import MachineForm, MaintenanceForm, ClaimForm
+from .serializers import MachineSerializer, MaintenanceSerializer, ClaimSerializer
 
 
 # Вывод списка машин
@@ -519,3 +521,18 @@ class RecoveryMethodDetail(PermissionRequiredMixin, DetailView):
     model = RecoveryMethod  # выводим способ восстановления
     template_name = 'reference.html'  # шаблон для вывода
     context_object_name = 'reference'  # имя списка, по которому будет обращение из html-шаблона
+
+
+class MachineViewSet(viewsets.ModelViewSet):
+    queryset = Machine.objects.all()
+    serializer_class = MachineSerializer
+
+
+class MaintenanceViewSet(viewsets.ModelViewSet):
+    queryset = Maintenance.objects.all()
+    serializer_class = MaintenanceSerializer
+
+
+class ClaimViewSet(viewsets.ModelViewSet):
+    queryset = Claim.objects.all()
+    serializer_class = ClaimSerializer

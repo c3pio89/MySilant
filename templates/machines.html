@@ -18,7 +18,7 @@
     <div class="tabs">
         {% if request.user.is_authenticated %}
             <div class="image-tab">
-                <img width="40px" height="30px" src="/static/images/machine.jpg" alt="Машина">
+                <img height="35px" src="/static/images/machine.jpg" alt="Машина">
                 <a class="active-tab" href="/silant/machines">
                     Машины
                 </a>
@@ -26,7 +26,7 @@
         {% endif %}
         {% if request.user.is_authenticated %}
             <div class="image-tab">
-                <img width="30px" height="30px" src="/static/images/maintenance.jpg" alt="ТО">
+                <img height="35px" src="/static/images/maintenance.jpg" alt="ТО">
                 <a class="inactive-tab" href="/silant/maintenances">
                     Техническое обслуживание
                 </a>
@@ -34,16 +34,19 @@
         {% endif %}
         {% if request.user.is_authenticated %}
             <div class="image-tab">
-                <img height="30px" src="/static/images/claim.jpg" alt="Рекламация">
+                <img height="35px" src="/static/images/claim.jpg" alt="Рекламация">
                 <a class="inactive-tab" href="/silant/claims">
                     Рекламации
                 </a>
             </div>
         {% endif %}
         {% if perms.mySilant.add_machine %}
-            <a class="inactive-tab" href="/silant/machines/create/">
-                Добавить запись о машине
-            </a>
+            <div class="image-tab">
+                <img height="35px" src="/static/images/add.jpg" alt="Добавление">
+                <a class="inactive-tab" href="/silant/machines/create/">
+                    Добавить запись о машине
+                </a>
+            </div>
         {% endif %}
     </div>
     {% if not request.user.is_authenticated %}
