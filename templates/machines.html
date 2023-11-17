@@ -18,7 +18,7 @@
     <div class="tabs">
         {% if request.user.is_authenticated %}
             <div class="image-tab">
-                <img height="35px" src="/static/images/machine.jpg" alt="Машина">
+                <img width="40px" height="35px" src="/static/images/machine.jpg" alt="Машина">
                 <a class="active-tab" href="/silant/machines">
                     Машины
                 </a>
@@ -26,7 +26,7 @@
         {% endif %}
         {% if request.user.is_authenticated %}
             <div class="image-tab">
-                <img height="35px" src="/static/images/maintenance.jpg" alt="ТО">
+                <img width="40px" height="35px" src="/static/images/maintenance.jpg" alt="ТО">
                 <a class="inactive-tab" href="/silant/maintenances">
                     Техническое обслуживание
                 </a>
@@ -34,7 +34,7 @@
         {% endif %}
         {% if request.user.is_authenticated %}
             <div class="image-tab">
-                <img height="35px" src="/static/images/claim.jpg" alt="Рекламация">
+                <img width="40px" height="35px" src="/static/images/claim.jpg" alt="Рекламация">
                 <a class="inactive-tab" href="/silant/claims">
                     Рекламации
                 </a>
@@ -42,7 +42,7 @@
         {% endif %}
         {% if perms.mySilant.add_machine %}
             <div class="image-tab">
-                <img height="35px" src="/static/images/add.jpg" alt="Добавление">
+                <img width="40px" height="35px" src="/static/images/add.jpg" alt="Добавление">
                 <a class="inactive-tab" href="/silant/machines/create/">
                     Добавить запись о машине
                 </a>
