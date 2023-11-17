@@ -6,6 +6,7 @@ class MachineSerializer(serializers.ModelSerializer):
     class Meta:
         model = Machine
         fields = [
+            'id',
             'number_machine',
             'model_equipment',
             'model_engine',
@@ -30,6 +31,7 @@ class MaintenanceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Maintenance
         fields = [
+            'id',
             'type',
             'maintenance_date',
             'operating_time',
@@ -45,6 +47,7 @@ class ClaimSerializer(serializers.ModelSerializer):
     class Meta:
         model = Claim
         fields = [
+            'id',
             'refusal_date',
             'operating_time',
             'refusal_node',

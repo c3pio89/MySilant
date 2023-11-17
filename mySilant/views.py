@@ -1,3 +1,4 @@
+import requests
 from rest_framework import viewsets
 from django.views.generic import (
     ListView, DetailView, CreateView, UpdateView, DeleteView
@@ -12,6 +13,7 @@ from .models import (
 from .filters import MachineFilter, MaintenanceFilter, ClaimFilter, MachinePreviewFilter
 from .forms import MachineForm, MaintenanceForm, ClaimForm
 from .serializers import MachineSerializer, MaintenanceSerializer, ClaimSerializer
+from .permissions import IsAdminOrManager, IsClient, IsServiceCompany, IsAdminOrManagerOrClientOrServiceCompany
 
 
 # Вывод списка машин
@@ -527,12 +529,111 @@ class MachineViewSet(viewsets.ModelViewSet):
     queryset = Machine.objects.all()
     serializer_class = MachineSerializer
 
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_authenticated:
+            # Если пользователь зарегистрирован
+            clients = Client.objects.all()
+            companies = ServiceCompany.objects.all()
+            users_clients = []
+            users_companies = []
+            queryset = Machine.objects.none()
+            for client in clients:
+                users_clients.append(client.user_link)
+            for company in companies:
+                users_companies.append(company.user_link)
+            if user.is_superuser == 1 or user.is_staff == 1:  # если админ или менеджер - доступны все машины
+                queryset = super().get_queryset()
+            elif user in users_clients:  # если клиент - доступны соответствующие машины
+                queryset = Machine.objects.filter(client__user_link=user).order_by('shipment_date')
+            elif user in users_companies:  # если сервисная компания - доступны соответствующие машины
+                queryset = Machine.objects.filter(service_company__user_link=user).order_by('shipment_date')
+            self.filterset = MachineFilter(self.request.GET, queryset)  # сохраняем фильтрацию в объекте класса
+        else:
+            # Если пользователь не зарегистрирован - ограниченный фильтр по всем машинам
+            if not self.request.GET.__contains__('number_machine'):
+                queryset = super().get_queryset()
+                queryset = Machine.objects.none()  # если в строке поиска пусто, то пустой queryset
+            else:
+                if self.request.GET.get('number_machine') != '':
+                    queryset = super().get_queryset()  # если что-то есть в строке поиска, получаем обычный запрос
+                else:
+                    queryset = super().get_queryset()
+                    queryset = Machine.objects.none()  # если отправлен пустой запрос, то пустой queryset
+            self.filterset = MachinePreviewFilter(self.request.GET, queryset)  # сохраняем фильтрацию в объекте класса
+        return self.filterset.qs  # возвращаем отфильтрованный список машин
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [IsAdminOrManagerOrClientOrServiceCompany()]
+        else:
+            return [IsAdminOrManager()]
+
+
 
 class MaintenanceViewSet(viewsets.ModelViewSet):
     queryset = Maintenance.objects.all()
     serializer_class = MaintenanceSerializer
 
+    def get_queryset(self):
+        user = self.request.user
+        clients = Client.objects.all()
+        companies = ServiceCompany.objects.all()
+        users_clients = []
+        users_companies = []
+        queryset = Maintenance.objects.none()
+        for client in clients:
+            users_clients.append(client.user_link)
+        for company in companies:
+            users_companies.append(company.user_link)
+        if user.is_superuser == 1 or user.is_staff == 1:
+            # Если админ или менеджер - доступны все ТО
+            queryset = super().get_queryset()
+        elif user in users_clients:
+            # Если клиент - доступны соответствующие ТО
+            queryset = Maintenance.objects.filter(machine__client__user_link=user).order_by('maintenance_date')
+        elif user in users_companies:
+            # Если сервисная компания - доступны соответствующие ТО
+            queryset = Maintenance.objects.filter(service_company__user_link=user).order_by('maintenance_date')
+        self.filterset = MaintenanceFilter(self.request.GET, queryset)  # сохраняем фильтрацию в объекте класса
+        return self.filterset.qs  # возвращаем отфильтрованный список машин
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [IsAdminOrManagerOrClientOrServiceCompany()]
+        else:
+            return [IsAdminOrManager()]
+
 
 class ClaimViewSet(viewsets.ModelViewSet):
     queryset = Claim.objects.all()
     serializer_class = ClaimSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        clients = Client.objects.all()
+        companies = ServiceCompany.objects.all()
+        users_clients = []
+        users_companies = []
+        queryset = Claim.objects.none()
+        for client in clients:
+            users_clients.append(client.user_link)
+        for company in companies:
+            users_companies.append(company.user_link)
+        if user.is_superuser == 1 or user.is_staff == 1:
+            # Если админ или менеджер - доступны все рекламации
+            queryset = super().get_queryset()
+        elif user in users_clients:
+            # Если клиент - доступны рекламации на машины этого клиента
+            queryset = Claim.objects.filter(machine__client__user_link=user).order_by('refusal_date')
+        elif user in users_companies:
+            # Если сервисная компания - доступны соответствующие рекламации
+            queryset = Claim.objects.filter(service_company__user_link=user).order_by('refusal_date')
+        self.filterset = ClaimFilter(self.request.GET, queryset)  # сохраняем фильтрацию в объекте класса
+        return self.filterset.qs  # возвращаем отфильтрованный список рекламаций
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [IsAdminOrManagerOrClientOrServiceCompany()]
+        else:
+            return [IsAdminOrManager()]
